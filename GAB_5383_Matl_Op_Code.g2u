@@ -1,0 +1,311 @@
+Program.Sub.ScreenSU.Start
+Gui.frmMatlOpCode..Create
+Gui.frmMatlOpCode..Caption("Material Op Code")
+Gui.frmMatlOpCode..Size(6120,2265)
+Gui.frmMatlOpCode..MinX(0)
+Gui.frmMatlOpCode..MinY(0)
+Gui.frmMatlOpCode..Position(0,0)
+Gui.frmMatlOpCode..BackColor(-2147483633)
+Gui.frmMatlOpCode..MaxButton(False)
+Gui.frmMatlOpCode..MousePointer(0)
+Gui.frmMatlOpCode..Sizeable(False)
+Gui.frmMatlOpCode..Event(UnLoad,frmMatlOpCode_UnLoad)
+Gui.frmMatlOpCode.lblPart.Create(Label,"Part Number",True,1050,255,0,60,135,True,0,"Arial",8,-2147483633,0)
+Gui.frmMatlOpCode.txtPart.Create(TextBox,"",True,1935,300,0,60,360,False,0,"Arial",8,-2147483643,1)
+Gui.frmMatlOpCode.txtRev.Create(TextBox,"",True,510,300,0,2025,360,False,0,"Arial",8,-2147483643,1)
+Gui.frmMatlOpCode.lblRev.Create(Label,"Rev",True,495,255,0,2025,135,True,0,"Arial",8,-2147483633,0)
+Gui.frmMatlOpCode.txtOpCode.Create(TextBox,"",True,1215,300,0,4740,360,False,0,"Arial",8,-2147483643,1)
+Gui.frmMatlOpCode.lblOpCode.Create(Label,"Op Code",True,810,255,0,4740,135,True,0,"Arial",8,-2147483633,0)
+Gui.frmMatlOpCode.txtDesc.Create(TextBox,"",True,2025,300,0,2625,360,False,0,"Arial",8,-2147483643,1)
+Gui.frmMatlOpCode.lblDesc.Create(Label,"Description",True,1050,255,0,2625,135,True,0,"Arial",8,-2147483633,0)
+Gui.frmMatlOpCode.lblSetup.Create(Label,"Setup",True,660,255,0,60,825,True,0,"Arial",8,-2147483633,0)
+Gui.frmMatlOpCode.txtSetup.Create(TextBox,"0.0000",True,915,300,0,60,1050,True,0,"Arial",8,-2147483643,1)
+Gui.frmMatlOpCode.txtSetup.NumericOnly(1)
+Gui.frmMatlOpCode.lblRuntime.Create(Label,"Runtime",True,765,255,0,1020,825,True,0,"Arial",8,-2147483633,0)
+Gui.frmMatlOpCode.txtRuntime.Create(TextBox,"0.0000",True,915,300,0,1050,1050,True,0,"Arial",8,-2147483643,1)
+Gui.frmMatlOpCode.txtRuntime.NumericOnly(1)
+Gui.frmMatlOpCode.lblPurchUM.Create(Label,"Purch UM",True,795,255,0,3105,825,True,0,"Arial",8,-2147483633,0)
+Gui.frmMatlOpCode.txtPurchUM.Create(TextBox,"",True,810,300,0,3105,1050,False,0,"Arial",8,-2147483643,1)
+Gui.frmMatlOpCode.txtPurchCost.Create(TextBox,"0.0000",True,915,300,0,2130,1050,True,0,"Arial",8,-2147483643,1)
+Gui.frmMatlOpCode.txtPurchCost.NumericOnly(1)
+Gui.frmMatlOpCode.txtPurchCost.Event(LostFocus,txtPurchCost_LostFocus)
+Gui.frmMatlOpCode.txtPurchCost.Event(GotFocus,txtPurchCost_GotFocus)
+Gui.frmMatlOpCode.lblPurchCost.Create(Label,"Purch Cost",True,915,255,0,2130,825,True,0,"Arial",8,-2147483633,0)
+Gui.frmMatlOpCode.txtInvCost.Create(TextBox,"0.0000",True,915,300,0,4035,1050,True,0,"Arial",8,-2147483643,1)
+Gui.frmMatlOpCode.txtInvCost.NumericOnly(1)
+Gui.frmMatlOpCode.txtInvCost.Event(GotFocus,txtInvCost_GotFocus)
+Gui.frmMatlOpCode.txtInvCost.Event(LostFocus,txtInvCost_LostFocus)
+Gui.frmMatlOpCode.lblInvCost.Create(Label,"Inv Cost",True,765,255,0,4035,825,True,0,"Arial",8,-2147483633,0)
+Gui.frmMatlOpCode.txtInvUM.Create(TextBox,"",True,810,300,0,5010,1050,False,0,"Arial",8,-2147483643,1)
+Gui.frmMatlOpCode.lblInvUM.Create(Label,"Inv UM",True,765,255,0,5010,825,True,0,"Arial",8,-2147483633,0)
+Gui.frmMatlOpCode.cmdSave.Create(Button)
+Gui.frmMatlOpCode.cmdSave.Size(855,375)
+Gui.frmMatlOpCode.cmdSave.Position(5100,1440)
+Gui.frmMatlOpCode.cmdSave.Caption("Save")
+Gui.frmMatlOpCode.cmdSave.Event(Click,cmdSave_Click)
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+	V.Global.sPartRev.Declare
+	V.Global.fUMConversion.Declare
+	V.Global.fPurchCost.Declare
+	V.Global.fInvCost.Declare
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+	
+	V.Local.sIcon.Declare
+	
+	'Set Icon
+	F.Intrinsic.String.Build("{0}\gss2.ico",V.Caller.ArtDir,V.Local.sIcon)
+	Gui.frmMatlOpCode..Icon(V.Local.sIcon)
+	
+	F.Intrinsic.Control.SelectCase(V.Caller.Hook)
+		F.Intrinsic.Control.Case(11210)
+			V.Passed.000202.Set("Matl Op Code")
+		
+		F.Intrinsic.Control.Case(11420)
+			F.Intrinsic.Control.If(V.Passed.000013,<>,"Material")
+				'If Sequence Type is not Material, then exit program
+				F.Intrinsic.UI.Msgbox("Sequence Type needs to be Material.","Sequence Type")
+				F.Intrinsic.Control.ExitSub
+			F.Intrinsic.Control.Else
+				F.Intrinsic.Control.If(V.Passed.000112,=,"")
+					'Exit if Part Number is not selected
+					F.Intrinsic.UI.Msgbox("Select Part Number first.","Missing Part Number")
+					F.Intrinsic.Control.ExitSub
+				F.Intrinsic.Control.Else
+					'Open DB Connection
+					F.ODBC.Connection!con.OpenCompanyConnection(300)
+					'Pull data and populate screen with data for user input
+					F.Intrinsic.String.GSSPartString(V.Passed.000112,V.Passed.000133,V.Global.sPartRev)
+					Gui.frmMatlOpCode.txtPart.Text(V.Passed.000112)
+					Gui.frmMatlOpCode.txtRev.Text(V.Passed.000133)
+					Gui.frmMatlOpCode.txtDesc.Text(V.Passed.000121)
+					F.Intrinsic.Control.CallSub(SetOpCode)
+					Gui.frmMatlOpCode.txtSetup.Text(V.Passed.000116)
+					Gui.frmMatlOpCode.txtRuntime.Text(V.Passed.000118)
+					F.Intrinsic.Control.CallSub(SetUM)
+					F.Intrinsic.Control.CallSub(ApplyConversion,"Save",False,"InvCost",V.Passed.000120)
+					Gui.frmMatlOpCode..Show
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.EndIf
+			
+	F.Intrinsic.Control.EndSelect
+
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.Main.End
+
+Program.Sub.SetOpCode.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+
+	V.Local.sSQL.Declare
+	V.Local.iOpCode.Declare
+	
+	F.Intrinsic.Control.If(V.Screen.frmMatlOpCode!txtOpCode.Text,=,"")
+		F.ODBC.Connection!con.ExecuteAndReturn("SELECT MAX(OPERATION) FROM V_OP_CODES WHERE LMO = 'M' AND OPERATION BETWEEN '100000' AND '999999';",V.Local.iOpCode)
+		F.Intrinsic.Control.If(V.Local.iOpCode,=,)
+			V.Local.iOpCode.Set(100000)
+		F.Intrinsic.Control.Else
+			F.Intrinsic.Math.Add(V.Local.iOpCode,1,V.Local.iOpCode)
+		F.Intrinsic.Control.EndIf
+		
+		Gui.frmMatlOpCode.txtOpCode.Text(V.Local.iOpCode)
+	F.Intrinsic.Control.Else
+		
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.SetOpCode.End
+
+Program.Sub.SetUM.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+	
+	V.Local.sSQL.Declare
+
+	F.Intrinsic.String.Build("SELECT PART, UM_PURCHASING, UM_INVENTORY, FACTOR_CONVERSION FROM V_INVENTORY_MSTR WHERE PART = '{0}';",V.Global.sPartRev,V.Local.sSQL)
+	F.Data.DataTable.CreateFromSQL("dtUM","con",V.Local.sSQL,True)
+	F.Intrinsic.Control.If(V.DataTable.dtUM.RowCount,=,0)
+		Gui.frmMatlOpCode.txtPurchUM.Text(V.Passed.000119)
+		Gui.frmMatlOpCode.txtInvUM.Text(V.Passed.000119)
+		V.Global.fUMConversion.Set(0)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.Control.If(V.DataTable.dtUM(0).UM_PURCHASING!FieldValTrim,=,"")
+			Gui.frmMatlOpCode.txtPurchUM.Text(V.DataTable.dtUM(0).UM_INVENTORY!FieldValTrim)
+		F.Intrinsic.Control.Else
+			Gui.frmMatlOpCode.txtPurchUM.Text(V.DataTable.dtUM(0).UM_PURCHASING!FieldValTrim)
+		F.Intrinsic.Control.EndIf
+		Gui.frmMatlOpCode.txtInvUM.Text(V.DataTable.dtUM(0).UM_INVENTORY!FieldValTrim)
+		V.Global.fUMConversion.Set(V.DataTable.dtUM(0).FACTOR_CONVERSION!FieldValTrim)
+	F.Intrinsic.Control.EndIf
+
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.SetUM.End
+
+Program.Sub.ApplyConversion.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+	
+	V.Local.fInvCost.Declare
+	V.Local.fPurchCost.Declare
+
+	F.Intrinsic.Control.If(V.Global.fUMConversion,=,0)
+		F.Intrinsic.Control.If(V.Args.Save,=,False)
+			F.Intrinsic.Control.If(V.Passed.000120,=,0)
+				Gui.frmMatlOpCode.txtPurchCost.Text(0.0000)
+				Gui.frmMatlOpCode.txtInvCost.Text(0.0000)
+			F.Intrinsic.Control.Else
+				Gui.frmMatlOpCode.txtPurchCost.Text(V.Passed.000120)
+				Gui.frmMatlOpCode.txtInvCost.Text(V.Args.InvCost)
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.Else
+			Gui.frmMatlOpCode.txtInvCost.Text(V.Screen.frmMatlOpCode!txtPurchCost.Text)
+		F.Intrinsic.Control.EndIf
+		
+	F.Intrinsic.Control.Else
+		F.Intrinsic.Control.If(V.Passed.000120,=,0)
+			Gui.frmMatlOpCode.txtPurchCost.Text(0.0000)
+			Gui.frmMatlOpCode.txtInvCost.Text(0.0000)
+		F.Intrinsic.Control.Else
+			F.Intrinsic.Control.If(V.Args.Save,=,False)
+				V.Local.fInvCost.Set(V.Args.InvCost)
+				F.Intrinsic.Math.Mult(V.Local.fInvCost,V.Global.fUMConversion,V.Local.fPurchCost)
+			F.Intrinsic.Control.Else
+				V.Local.fPurchCost.Set(V.Screen.frmMatlOpCode!txtPurchCost.Text)
+				F.Intrinsic.Math.Div(V.Local.fPurchCost,V.Global.fUMConversion,V.Local.fInvCost)
+			F.Intrinsic.Control.EndIf
+			Gui.frmMatlOpCode.txtPurchCost.Text(V.Local.fPurchCost)
+			Gui.frmMatlOpCode.txtInvCost.Text(V.Local.fInvCost)
+		F.Intrinsic.Control.EndIf
+		
+	F.Intrinsic.Control.EndIf
+
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.ApplyConversion.End
+
+Program.Sub.frmMatlOpCode_UnLoad.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+
+	'Close DB Connection
+	F.ODBC.Connection!con.Close
+	F.Intrinsic.Control.End
+
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.frmMatlOpCode_UnLoad.End
+
+Program.Sub.txtPurchCost_GotFocus.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+
+	V.Global.fPurchCost.Set(V.Screen.frmMatlOpCode!txtPurchCost.Text)
+
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.txtPurchCost_GotFocus.End
+
+Program.Sub.txtPurchCost_LostFocus.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+
+	F.Intrinsic.Control.If(V.Screen.frmMatlOpCode!txtPurchCost.Text,<>,V.Global.fPurchCost)
+		F.Intrinsic.Control.CallSub(ApplyConversion,"Save",True)
+	F.Intrinsic.Control.EndIf
+
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.txtPurchCost_LostFocus.End
+
+Program.Sub.txtInvCost_GotFocus.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+
+	V.Global.fInvCost.Set(V.Screen.frmMatlOpCode!txtInvCost.Text)
+
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.txtInvCost_GotFocus.End
+
+Program.Sub.txtInvCost_LostFocus.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+
+	F.Intrinsic.Control.If(V.Screen.frmMatlOpCode!txtInvCost.Text,<>,V.Global.fInvCost)
+		F.Intrinsic.Control.CallSub(ApplyConversion,"Save",False,"InvCost",V.Screen.frmMatlOpCode!txtInvCost.Text)
+	F.Intrinsic.Control.EndIf
+
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.txtInvCost_LostFocus.End
+
+Program.Sub.cmdSave_Click.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+
+	V.Local.sSQL.Declare
+	
+	F.Intrinsic.String.Build("SELECT * FROM OP_CODES WHERE LMO = 'M' AND MACHINE = '{0}' AND OPERATION = '{1}';",V.Global.sPartRev.Trim,V.Screen.frmMatlOpCode!txtOpCode.Text,V.Local.sSQL)
+	F.Data.DataTable.CreateFromSQL("dtSave","con",V.Local.sSQL,True)
+	F.Intrinsic.Control.If(V.DataTable.dtSave.RowCount,=,0)
+		F.Data.DataTable.AddRow("dtSave","LMO","M","MACHINE",V.Global.sPartRev,"OPERATION",V.Screen.frmMatlOpCode!txtOpCode.Text,"DESCRIPTION",V.Screen.frmMatlOpCode!txtDesc.Text,"STANDARD_SETUP",V.Screen.frmMatlOpCode!txtSetup.Text,"STANDARD_RUNTIME",V.Screen.frmMatlOpCode!txtRuntime.Text,"UNIT_MEASURE",V.Screen.frmMatlOpCode!txtInvUM.Text,"RATE",V.Screen.frmMatlOpCode!txtInvCost.Text)
+	F.Intrinsic.Control.Else
+		F.Data.DataTable.SetValue("dtSave",-1,"LMO","M","MACHINE",V.Global.sPartRev,"OPERATION",V.Screen.frmMatlOpCode!txtOpCode.Text,"DESCRIPTION",V.Screen.frmMatlOpCode!txtDesc.Text,"STANDARD_SETUP",V.Screen.frmMatlOpCode!txtSetup.Text,"STANDARD_RUNTIME",V.Screen.frmMatlOpCode!txtRuntime.Text,"UNIT_MEASURE",V.Screen.frmMatlOpCode!txtInvUM.Text,"RATE",V.Screen.frmMatlOpCode!txtInvCost.Text)
+	F.Intrinsic.Control.EndIf
+	F.Data.Datatable.SaveToDB("dtSave","con","OP_CODES","LMO*!*MACHINE*!*OPERATION")
+	
+	'Post Values back to screen
+	V.Passed.000114.Set(V.Screen.frmMatlOpCode!txtOpCode.Text)
+	V.Passed.000121.Set(V.Screen.frmMatlOpCode!txtDesc.Text)
+	V.Passed.000116.Set(V.Screen.frmMatlOpCode!txtSetup.Text)
+	V.Passed.000118.Set(V.Screen.frmMatlOpCode!txtRuntime.Text)
+	V.Passed.000001.Set(V.Screen.frmMatlOpCode!txtRuntime.Text)
+	V.Passed.000120.Set(V.Screen.frmMatlOpCode!txtInvCost.Text)
+	V.Passed.000119.Set(V.Screen.frmMatlOpCode!txtInvUM.Text)
+	
+	F.Intrinsic.Control.CallSub(frmMatlOpCode_UnLoad)
+	
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.cmdSave_Click.End
+
+Program.Sub.Comments.Start
+Program.Sub.Comments.End
